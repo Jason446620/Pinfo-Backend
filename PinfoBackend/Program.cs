@@ -1,5 +1,6 @@
 
 
+using Microsoft.AspNetCore.Mvc;
 using PinfoBackend.Cpu;
 using Serilog;
 
@@ -15,7 +16,7 @@ namespace PinfoBackend
 				.WriteTo.File("/log/log-.log", rollingInterval: RollingInterval.Day)
 				.CreateLogger();
 			
-			var builder = WebApplication.CreateBuilder(args);
+			WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
 			builder.Services.AddAuthorization();
@@ -23,7 +24,7 @@ namespace PinfoBackend
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 
-			var app = builder.Build();
+			WebApplication app = builder.Build();
 
 			app.UseHttpsRedirection();
 
@@ -35,39 +36,34 @@ namespace PinfoBackend
 				return;
 			}
 
-			var summaries = new[]
+			app.MapGet("/weatherforecast", GetWeatherForecast);
+			app.MapGet("/testing", () => "Test answer");
+			app.MapGet("/cpuloadpercent", ([FromServices] ICpuManager cpuManager) =>
+				{
+					return new { Value = cpuManager.GetCpuLoadPercentage() };
+				});
+			app.MapGet("/cpuarch", () =>
+			{
+				return new { CpuManager.CpuArchitecture };
+			});
+
+			app.Run();
+		}
+
+		private static IEnumerable<WeatherForecast> GetWeatherForecast()
+		{
+			string[] summaries = new[]
 			{
 				"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 			};
 
-			app.MapGet("/weatherforecast", (HttpContext httpContext) =>
+			return Enumerable.Range(1, 5).Select(index => new WeatherForecast
 				{
-					var forecast = Enumerable.Range(1, 5).Select(index =>
-							new WeatherForecast
-							{
-								Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-								TemperatureC = Random.Shared.Next(-20, 55),
-								Summary = summaries[Random.Shared.Next(summaries.Length)]
-							})
-						.ToArray();
-					return forecast;
+					Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+					TemperatureC = Random.Shared.Next(-20, 55),
+					Summary = summaries[Random.Shared.Next(summaries.Length)]
 				})
-				.WithName("GetWeatherForecast");
-
-			app.MapGet("/testing", (HttpContext httpContext) =>
-			{
-				return "Test answer";
-			});
-
-			app.MapGet("/cpuloadpercent", (HttpContext httpContext) =>
-			{
-				return new
-				{
-					Value = CpuManager.GetCpuLoadPercentage()
-				};
-			});
-
-			app.Run();
+				.ToArray();
 		}
 	}
 }

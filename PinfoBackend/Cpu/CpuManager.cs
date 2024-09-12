@@ -1,10 +1,14 @@
 ﻿namespace PinfoBackend.Cpu
 {
-	public static class CpuManager
+	public interface ICpuManager
+	{
+		double GetCpuLoadPercentage();
+	}
+	public class CpuManager : ICpuManager
 	{
 		public static string CpuArchitecture => System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString();
 
-		public static double GetCpuLoadPercentage()
+		public double GetCpuLoadPercentage()
 		{
 			// Read the 1-minute load average from /proc/loadavg
 			string loadAvgContent = File.ReadAllText("/host/proc/loadavg");
