@@ -1,5 +1,7 @@
 
 
+using Serilog;
+
 namespace PinfoBackend
 {
 	public class Program
@@ -7,10 +9,10 @@ namespace PinfoBackend
 		public static void Main(string[] args)
 		{
 			// Setup serilog
-			// Log.Logger = new LoggerConfiguration()
-			// 	.WriteTo.Console()
-			// 	.WriteTo.File("/log/log-.log", rollingInterval: RollingInterval.Day)
-			// 	.CreateLogger();
+			Log.Logger = new LoggerConfiguration()
+				.WriteTo.Console()
+				.WriteTo.File("/log/log-.log", rollingInterval: RollingInterval.Day)
+				.CreateLogger();
 			
 			var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +28,11 @@ namespace PinfoBackend
 
 			app.UseAuthorization();
 
-			// if (Environment.OSVersion.Platform != PlatformID.Unix)
-			// {
-			// 	Log.Error("This API is only supported on Unix.");
-			// 	return;
-			// }
+			if (Environment.OSVersion.Platform != PlatformID.Unix)
+			{
+				Log.Error("This API is only supported on Unix.");
+				return;
+			}
 
 			var summaries = new[]
 			{
@@ -50,6 +52,11 @@ namespace PinfoBackend
 					return forecast;
 				})
 				.WithName("GetWeatherForecast");
+
+			app.MapGet("/testing", (HttpContext httpContext) =>
+			{
+				return "Test answer";
+			});
 
 			app.Run();
 		}
