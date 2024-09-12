@@ -39,6 +39,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker buildx build --no-cache --platform linux/arm64 \
+            --tag turwaith/pinfo-backend:${{ env.VERSION }} \
             --tag turwaith/pinfo-backend:latest \
             --push \
             --cache-from=type=registry,ref=turwaith/pinfo-backend:cache \
