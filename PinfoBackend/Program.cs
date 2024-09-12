@@ -1,5 +1,6 @@
 
 
+using PinfoBackend.Cpu;
 using Serilog;
 
 namespace PinfoBackend
@@ -56,6 +57,14 @@ namespace PinfoBackend
 			app.MapGet("/testing", (HttpContext httpContext) =>
 			{
 				return "Test answer";
+			});
+
+			app.MapGet("/cpuloadpercent", (HttpContext httpContext) =>
+			{
+				return new
+				{
+					Value = CpuManager.GetCpuLoadPercentage()
+				};
 			});
 
 			app.Run();
