@@ -1,0 +1,17 @@
+﻿services:
+  pinfo-backend:
+    image: pinfo-backend-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pinfo-backend
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/log/pinfo-backend:/log
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
