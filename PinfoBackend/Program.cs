@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using PinfoBackend.Cpu;
+using PinfoBackend.Memory;
 using Serilog;
 
 namespace PinfoBackend
@@ -25,6 +26,7 @@ namespace PinfoBackend
 			builder.Services.AddEndpointsApiExplorer();
 			
 			builder.Services.AddSingleton<ICpuManager, CpuManager>();
+			builder.Services.AddSingleton<IMemoryManager, MemoryManager>();
 
 			WebApplication app = builder.Build();
 
@@ -47,6 +49,7 @@ namespace PinfoBackend
 			{
 				return new { CpuManager.CpuArchitecture };
 			});
+			app.MapGet("/memoryload", GetMemoryLoad);
 
 			app.Run();
 		}
@@ -54,6 +57,11 @@ namespace PinfoBackend
 		private static object GetCpuLoadPercentage([FromServices] ICpuManager cpuManager)
 		{
 			return new { Value = cpuManager.GetCpuLoadPercentage() };
+		}
+
+		private static MemInfoDto GetMemoryLoad([FromServices] IMemoryManager memoryManager)
+		{
+			return memoryManager.GetMemoryLoad();
 		}
 
 		private static IEnumerable<WeatherForecast> GetWeatherForecast()
