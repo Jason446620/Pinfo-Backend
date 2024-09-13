@@ -32,11 +32,13 @@ namespace PinfoBackend
 
 			app.UseAuthorization();
 
-			// if (Environment.OSVersion.Platform != PlatformID.Unix)
-			// {
-			// 	Log.Error("This API is only supported on Unix.");
-			// 	return;
-			// }
+		#if !DEBUG
+		    if (Environment.OSVersion.Platform != PlatformID.Unix)
+		    {
+		        Log.Error("This API is only supported on Unix.");
+		        return;
+		    }
+		#endif
 
 			app.MapGet("/weatherforecast", GetWeatherForecast);
 			app.MapGet("/testing", () => "Test answer");
