@@ -23,6 +23,8 @@ namespace PinfoBackend
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
+			
+			builder.Services.AddSingleton<ICpuManager, CpuManager>();
 
 			WebApplication app = builder.Build();
 
@@ -30,24 +32,26 @@ namespace PinfoBackend
 
 			app.UseAuthorization();
 
-			if (Environment.OSVersion.Platform != PlatformID.Unix)
-			{
-				Log.Error("This API is only supported on Unix.");
-				return;
-			}
+			// if (Environment.OSVersion.Platform != PlatformID.Unix)
+			// {
+			// 	Log.Error("This API is only supported on Unix.");
+			// 	return;
+			// }
 
 			app.MapGet("/weatherforecast", GetWeatherForecast);
 			app.MapGet("/testing", () => "Test answer");
-			app.MapGet("/cpuloadpercent", ([FromServices] ICpuManager cpuManager) =>
-				{
-					return new { Value = cpuManager.GetCpuLoadPercentage() };
-				});
+			app.MapGet("/cpuloadpercent", GetCpuLoadPercentage);
 			app.MapGet("/cpuarch", () =>
 			{
 				return new { CpuManager.CpuArchitecture };
 			});
 
 			app.Run();
+		}
+
+		private static object GetCpuLoadPercentage([FromServices] ICpuManager cpuManager)
+		{
+			return new { Value = cpuManager.GetCpuLoadPercentage() };
 		}
 
 		private static IEnumerable<WeatherForecast> GetWeatherForecast()

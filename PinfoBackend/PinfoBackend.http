@@ -1,4 +1,4 @@
-@PinfoBackend_HostAddress = http://localhost:5215
+@PinfoBackend_HostAddress = http://localhost:5000
 
 GET {{PinfoBackend_HostAddress}}/weatherforecast/
 Accept: application/json
